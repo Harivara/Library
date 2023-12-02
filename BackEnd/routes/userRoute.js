@@ -13,7 +13,7 @@ router.route("/me/details").get(isAuthenticatedUser,getUserDetails)
 // isAuthenticatedUser function present in auth.js file verifies the token created while log in the user
 // So while retriving userDetails we have to import isAuthenticatedUser function also
 router.route("/password/update").put(isAuthenticatedUser,updateUserPassword)
-router.route("/me/update").put(isAuthenticatedUser,updateUserProfile)
+router.route("/profile/update").put(isAuthenticatedUser,updateUserProfile)
 
 router.route("/admin/users").get(isAuthenticatedUser,authorizedRoles("admin"),getAllUsers)
 router.route("/admin/user/:id").get(isAuthenticatedUser,authorizedRoles("admin"),getSingleUser)

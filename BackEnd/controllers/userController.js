@@ -19,12 +19,13 @@ exports.createUser= catchasyncErrorHandler(
             url:"sample url"
         }
     })
-    const token=user.getJWTToken()
-        res.status(201).json({
-            success:true,
-            user,
-            token
-        })
+    // const token=user.getJWTToken()
+    //     res.status(201).json({
+    //         success:true,
+    //         user,
+    //         token
+    //     })
+    sendToken(user,200,res)
     }
 )
 
@@ -36,7 +37,6 @@ exports.loginUser =catchasyncErrorHandler(
         //checking if user has given email and password
         if(!email || !password){
             return next(new ErrorHandler("Please Enter Email and Password",400))
-            // res.status(400).send("Email or password is not send from frontend")
         }
 
         const user= await User.findOne({email}).select("+password")
@@ -45,17 +45,17 @@ exports.loginUser =catchasyncErrorHandler(
             return next(new ErrorHandler("Invalid Email and Password",401))
         }
 
-        const isPasswordMatch =user.comparePassword(password)
+        const isPasswordMatch = await user.comparePassword(password)
 
         if(!isPasswordMatch){
             return next(new ErrorHandler("Invalid Email and Password",401))
         }
 
-        const token=user.getJWTToken()
-        res.status(200).json({
-            success:true,
-            token,
-        })
+        // const token=user.getJWTToken()
+        // res.status(200).json({
+        //     success:true,
+        //     token,
+        // })
         sendToken(user,200,res)
     }
 )
@@ -95,7 +95,7 @@ exports.updateUserPassword = catchasyncErrorHandler(
     async (req,res,next)=>{
         const user=await User.findById(req.user.id).select("+password")
 
-        const isPasswordMatch =user.comparePassword(req.body.oldpassword)
+        const isPasswordMatch = await user.comparePassword(req.body.oldpassword)
 
         if(!isPasswordMatch){
             return next(new ErrorHandler("Invalid Email and Password",401))
