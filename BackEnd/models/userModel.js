@@ -39,6 +39,38 @@ role:{
     type:String,
     default:"user"
 },
+ReservationHistory:[{
+    title:{
+        type:String,
+        required:true,
+    },
+    book:{
+        type:mongoose.Schema.ObjectId,
+        ref:"Book",
+        required:true,
+    }
+}],
+BooksReserved:[
+{
+    title:{
+        type:String,
+        required:true,
+    },
+    book:{
+        type:mongoose.Schema.ObjectId,
+        ref:"Book",
+        required:true,
+    }
+}
+],
+currentReserved:{
+    type:Number,
+    default:0
+},
+TotalReserved:{
+    type:Number,
+    default:0
+},
 resetPasswordToken: String,
 resetPasswordExpire: Date,
 
