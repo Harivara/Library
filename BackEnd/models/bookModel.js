@@ -28,13 +28,11 @@ const bookSchema = new mongoose.Schema({
         default:this.quantity
     },
    
-    ReservedBy:[{
-        user:{
-            type:mongoose.Schema.ObjectId,
-            ref:"User",
-            required:true
-        }
-    }]
+    ReservedBy: [{ 
+        type: mongoose.Schema.ObjectId, 
+        ref: "User"
+    }],
+
    
 })
 module.exports = mongoose.model("Book",bookSchema)

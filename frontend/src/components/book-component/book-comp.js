@@ -28,19 +28,21 @@ export const Book = () => {
     const [openTab, setOpenTab] = useState(0)
  
     const ReserveBook = () => {
-        if (book && user) {
-            BackendApi.user
-            .reserveBook(book._id, user._id)
-    .then((data) => {
-        console.log("Book reserved successfully:", data);
-        // Handle the data or update the UI accordingly
-    })
-    .catch((error) => {
-        console.error("Error reserving book:", error);
-        // Handle errors or show error messages to the user
-    });
-}
-    }
+            if (book && user) {
+                BackendApi.user
+                    .borrowBook(book.isbn, user._id)
+                    .then(({ book, error }) => {
+                        if (error) {
+                            NotificationManager.error(error)
+                        } else {
+                            setBook(book)
+                        }
+                    })
+                    .catch(console.error)
+            }
+        }
+
+    
         
 
     const UnReserveBook = () => {
@@ -172,10 +174,12 @@ export const Book = () => {
                                 </Button>
                             ) : (
                                 <>
+                                {console.log(book.ReservedBy)}
                                     <Button
                                         variant="contained"
                                         onClick={ReserveBook}
                                         disabled={book && user && book.ReservedBy.includes(user._id)}
+                                    
                                     >
                                         Reserve 
                                     </Button>

@@ -157,7 +157,7 @@ exports.getSingleUser = catchasyncErrorHandler(
         const user= await User.findById(req.params.id)
 
         if(!user){
-            return next(new ErrorHandler(`USer doesnot exits with Id ${req.params.id}`))
+            return next(new ErrorHandler(`User doesnot exits with Id ${req.params.id}`))
         }
         res.status(200).json({
             success:true,
@@ -217,35 +217,15 @@ exports.upadateUserRole = catchasyncErrorHandler(
            if (book.ReservedBy.includes(user.id)) {
                 return next(new ErrorHandler("You have already reserved this book"));
             }
-    
         
-        book.ReservedBy.push(user.id);
-        
-        const updatedBook = await book.save();
-        console.log(updatedBook, "bef")
-            if (!updatedBook) {
-                return next(new ErrorHandler("Failed to update book", 500));
-            }
-        console.log(updatedBook._id," upd")
-            // Update User's reserved books
-            user.BooksReserved.push(updatedBook._id);
-            console.log(user.BooksReserved," userbooks")
-            const updatedUser = await user.save();
-console.log(updatedUser, " hel")
-        
-            if (!updatedUser) {
-                return next(new ErrorHandler("Failed to update user's reserved books", 500));
-            }
-        
-            // Retrieve all books reserved by the user
-            const userReservedBooks = await User.findById(req.user.id).populate('BooksReserved.book');
-            console.log("240")
+            book.ReservedBy.push(user.id)
+            const updatedBook = await book.save();         
+
             res.status(200).json({
                 book: {
                     ...updatedBook.toJSON(),
                     AvailabilityQuantity: updatedBook.quantity - updatedBook.ReservedBy.length,
-                },
-                userReservedBooks: userReservedBooks.BooksReserved.map((reservedBook) => reservedBook.book),
+                }
             });
         }
     );

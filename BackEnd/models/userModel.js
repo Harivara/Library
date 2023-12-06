@@ -43,7 +43,7 @@ ReservationHistory:[{
     book:{
         type:mongoose.Schema.ObjectId,
         ref:"Book",
-        required:true,
+        // required:true,
     }
 }
 ],
@@ -52,7 +52,7 @@ BooksReserved:[
     book:{
         type:mongoose.Schema.ObjectId,
         ref:"Book",
-        required:true,
+        // required:true,
     }
 }
 ],

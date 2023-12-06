@@ -14,6 +14,7 @@ import { WithLoginProtector } from '../access-control/login-protector.js'
 import { WithAdminProtector } from '../access-control/admin-protector.js'
 import { BookForm } from '../forms/book-form.js'
 import { Book } from '../book-component/book-comp.js'
+import Profile from '../login/profile.js'
 import { NotificationManager } from 'react-notifications'
 
 const Applayout = () => {
@@ -55,6 +56,10 @@ const Applayout = () => {
   const handleLogout = () => {
     logoutUser()
     handleCloseUserMenu()
+  }
+  const profileview =()=>{
+    
+
   }
 
   useEffect(() => {
@@ -111,8 +116,10 @@ const Applayout = () => {
                     open={Boolean(anchorElUser)}
                     onClose={handleCloseUserMenu}
                   >
-                    <MenuItem onClick={handleCloseUserMenu}>
-                      <Typography textAlign="center">Dashboard</Typography>
+                    <MenuItem onClick={profileview()
+                    }>
+                      <Typography textAlign="center">Profile</Typography>
+
                     </MenuItem>
                     <MenuItem onClick={handleLogout}>
                       <Typography textAlign="center">Logout</Typography>
@@ -171,6 +178,11 @@ const Applayout = () => {
         }></Route>
 
         <Route path="*" element={<Navigate to="/books" replace />}> </Route>
+        <Route path="/profile/:id" exact element={
+        <WithLoginProtector>
+          <Profile/>
+            </WithLoginProtector>
+      }></Route>
       </Routes>
       <LoginDialog
         open={openLoginDialog}
@@ -182,6 +194,7 @@ const Applayout = () => {
       handleSubmit={handleRegisterSubmit}
       handleClose={handleRegisterClose}
       />
+     
 
     </>
   )
