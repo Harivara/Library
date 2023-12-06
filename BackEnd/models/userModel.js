@@ -40,22 +40,15 @@ role:{
     default:"user"
 },
 ReservationHistory:[{
-    title:{
-        type:String,
-        required:true,
-    },
     book:{
         type:mongoose.Schema.ObjectId,
         ref:"Book",
         required:true,
     }
-}],
-BooksReserved:[
+}
+],
+BooksReserved:[ 
 {
-    title:{
-        type:String,
-        required:true,
-    },
     book:{
         type:mongoose.Schema.ObjectId,
         ref:"Book",

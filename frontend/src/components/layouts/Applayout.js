@@ -7,17 +7,21 @@ import { Route, Routes, Navigate, Link, useNavigate } from 'react-router-dom'
 import AdbIcon from "@mui/icons-material/Adb"
 import Bookslist from '../book-list/booklist'
 import { LoginDialog } from '../login/logindailouge'
+import { RegisterDialog } from '../login/registerdailouge.js'
 import { useState, useEffect } from 'react'
 import { useUser } from '../../context/user-contex.js'
 import { WithLoginProtector } from '../access-control/login-protector.js'
 import { WithAdminProtector } from '../access-control/admin-protector.js'
 import { BookForm } from '../forms/book-form.js'
+import { Book } from '../book-component/book-comp.js'
+import { NotificationManager } from 'react-notifications'
 
 const Applayout = () => {
 
   const [openLoginDialog, setOpenLoginDialog] = useState(false)
+  const [openRegisterDialog, setOpenRegisterDialog] = useState(false)
 
-  const { user, isAdmin, loginUser, logoutUser } = useUser()
+  const { user, isAdmin, loginUser, logoutUser, RegisterUser } = useUser()
 
   const [anchorElUser, setAnchorElUser] = useState(null)
 
@@ -36,8 +40,16 @@ const Applayout = () => {
     loginUser(username, password)
     setOpenLoginDialog(false)
   }
+  const handleRegisterSubmit = (username, password) => {
+    // console.log(username,password)
+    RegisterUser(username, password)
+    setOpenRegisterDialog(false)
+  }
   const handleLoginClose = () => {
     setOpenLoginDialog(false)
+  }
+  const handleRegisterClose = () => {
+    setOpenRegisterDialog(false)
   }
 
   const handleLogout = () => {
@@ -108,6 +120,7 @@ const Applayout = () => {
                   </Menu>
                 </>
               ) : (
+                <>
                 <Button
                   onClick={() => {
                     setOpenLoginDialog(true)
@@ -116,6 +129,15 @@ const Applayout = () => {
                 >
                   Login
                 </Button>
+                <Button
+                  onClick={() => {
+                    setOpenRegisterDialog(true)
+                  }}
+                  sx={{ my: 2, color: "white", display: "block" }}
+                >
+                  Register
+                </Button>
+                </>
               )}
             </Toolbar>
           </AppBar>
@@ -125,6 +147,12 @@ const Applayout = () => {
 
       <Routes>
         <Route path="/books" exact element={<Bookslist />}></Route>
+        <Route path="/books/:id" element={
+          <WithLoginProtector>
+            <Book/>
+          </WithLoginProtector>
+        }></Route>
+        
 
         <Route path='/admin/books/add' exact element={
           <WithLoginProtector>
@@ -149,6 +177,12 @@ const Applayout = () => {
         handleSubmit={handleLoginSubmit}
         handleClose={handleLoginClose}
       />
+      <RegisterDialog
+      open={openRegisterDialog}
+      handleSubmit={handleRegisterSubmit}
+      handleClose={handleRegisterClose}
+      />
+
     </>
   )
 }

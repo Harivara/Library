@@ -23,11 +23,12 @@ const bookSchema = new mongoose.Schema({
         type:Number,
         required: true
     },
+    Avaibilityquantity:{
+        type:Number,
+        default:this.quantity
+    },
+   
     ReservedBy:[{
-        name:{
-            type:String,
-            required:true
-        },
         user:{
             type:mongoose.Schema.ObjectId,
             ref:"User",

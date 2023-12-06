@@ -5,6 +5,7 @@ import BackendApi from "../backend-api-calls"
 const UserContext = createContext({
     user: null,
     loginUser: () => { },
+    RegisterUser: ()=>{}
 })
 const useUser = () => useContext(UserContext);
 
@@ -33,6 +34,16 @@ const UserProvider = ({ children }) => {
             NotificationManager.error(error)
         } else {
             NotificationManager.success("Logged in successfully")
+            console.log(user, 'check user login')
+            setUser(user)
+        }
+    }
+    const RegisterUser = async (username, password , name) => {
+        const { user, error } = await BackendApi.user.register(username, password,name)
+        if (error) {
+            NotificationManager.error(error)
+        } else {
+            NotificationManager.success("Logged in successfully")
             setUser(user)
         }
     }
@@ -43,7 +54,7 @@ const UserProvider = ({ children }) => {
     }
 
     return (
-        <UserContext.Provider value={{ user, loginUser, logoutUser, isAdmin }}>
+        <UserContext.Provider value={{ user, loginUser, logoutUser, isAdmin, RegisterUser }}>
             {children}
         </UserContext.Provider>
     )

@@ -25,13 +25,13 @@ export const BookForm = () => {
     const navigate = useNavigate()
     const [book, setBook] = useState({
         title: "",
-        quantity: 0,
+        Avaibilityquantity: 0,
         Author: "",
         Publication:"",
     })
     const [errors, setErrors] = useState({
         title: "",
-        quantity: "",
+        Avaibilityquantity: "",
         Author: "",
         Publication:"",
     })
@@ -43,12 +43,13 @@ export const BookForm = () => {
         event.preventDefault()
         if (!isInvalid) {
             if (id) {
-              
+                console.log(book, 'before api')
                 BackendApi.book
                     .updateBookByid(id, {
                         ...book,
                     })
                     .then(() => navigate(-1))
+                    // .then(() => console.log('NAVIGATED'))
             } else {
                 BackendApi.book
                     .createBook({
@@ -59,14 +60,20 @@ export const BookForm = () => {
         }
     }
 
+    // useEffect(() => {
+    //   console.log(book)
+    // }, [book])    
+    
     const updateBookField = (event) => {
         const field = event.target
+        // console.log(field.name, field.value, book)
         setBook((book) => ({ ...book, [field.name]: field.value }))
+        // console.log(book)
     }
 
     const validateForm = (event) => {
         const { name, value } = event.target
-        if (["name", "quantity", "Author", "Publication"].includes(name)) {
+        if (["name", "Avaibilityquantity", "Author", "Publication"].includes(name)) {
             setBook((prevProd) => ({ ...prevProd, [name]: value?.trim() }))
             if (!value?.trim()?.length) {
                 setErrors({ ...errors, [name]: `${name} can't be empty` })
@@ -74,7 +81,7 @@ export const BookForm = () => {
                 setErrors({ ...errors, [name]: "" })
             }
         }
-        if (["quantity"].includes(name)) {
+        if (["Avaibilityquantity"].includes(name)) {
             if (isNaN(Number(value))) {
                 setErrors({ ...errors, [name]: "Only numbers are allowed" })
             } else {
@@ -110,7 +117,7 @@ export const BookForm = () => {
                                 name="name"
                                 required
                                 value={book.name}
-                                onChange={updateBookField}
+                                onChange={(e) => {setBook((book) => ({ ...book, title: e.target.value }))}}
                                 onBlur={validateForm}
                                 error={errors.name?.length > 0}
                                 helperText={errors.name}
@@ -144,13 +151,13 @@ export const BookForm = () => {
                         <FormControl className={classes.mb2}>
                             <TextField
                                 label="Quantity"
-                                name="quantity"
+                                name="Avaibilityquantity"
                                 type="number"
-                                value={book.quantity}
+                                value={book.Avaibilityquantity}
                                 onChange={updateBookField}
                                 onBlur={validateForm}
-                                error={errors.quantity?.length > 0}
-                                helperText={errors.quantity}
+                                error={errors.Avaibilityquantity?.length > 0}
+                                helperText={errors.Avaibilityquantity}
                             />
                         </FormControl>
                     </FormGroup>

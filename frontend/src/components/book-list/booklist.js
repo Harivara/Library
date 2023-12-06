@@ -19,15 +19,19 @@ const Booklist = () => {
  const [activeBookId, setActiveBookId] = useState("")
  const [openModal, setOpenModal] = useState(false)
  const {isAdmin,user}=useUser()
+ const [reservedBook, setReservedBook] =useState([])
  
-
 
 
   const fetchBooks = async () => {
     const  {books} = await BackendApi.book.getAllBooks()
-    console.log(books)
-    setbooks(books)
+      setbooks(books)
 } 
+const fetchUserBooks = async () => {
+    const  {userbooks} = await BackendApi.book.getUserBooks()
+    console.log(userbooks.user.BooksReserved)
+} 
+
 
 
 const deleteBook = () => {
@@ -41,20 +45,20 @@ const deleteBook = () => {
 }
    useEffect(()=>{
       fetchBooks().catch(console.error)
-   }, []) 
+      fetchUserBooks().catch(console.error)
+   }, [user]) 
 
   return (
-   <>
-   <div className={`${classes.pageHeader} ${classes.mb2}`}>
-    <Typography variant='h5'>Book List</Typography>
-   </div>
-
-   {books.length > 0 ? (
+ 
                 <>
                 <div className={`${classes.pageHeader} ${classes.mb2}`}>
-                    <Typography variant="h5">Book List</Typography>
-                    
-                </div>
+                <Typography variant="h5">Book List</Typography>
+                {isAdmin && (
+                    <Button variant="contained" color="primary" component={RouterLink} to="/admin/books/add">
+                        Add Book
+                    </Button>
+                )}
+            </div>
                 {books.length > 0 ? (
                     <>
                         <div className={classes.tableContainer}>
@@ -83,7 +87,7 @@ const deleteBook = () => {
                                                 <TableCell align="right">{book._id}</TableCell>
                                                 <TableCell align="right">{book.Author}</TableCell>
                                                 
-                                                <TableCell align="right">{book.quantity}</TableCell>
+                                                <TableCell align="right">{book.Avaibilityquantity}</TableCell>
                                                 <TableCell align="right">{book.Status}</TableCell>
                                                 <TableCell align="right">{book.Publication}</TableCell>
                                                
@@ -110,16 +114,13 @@ const deleteBook = () => {
                                                             >
                                                                 Edit
                                                             </Button>
-                                                            {
-                                                                
-                                                            }
+                                                           
                                                             <Button
                                                                 variant="contained"
                                                                 color="secondary"
                                                                 size="small"
                                                                 onClick={(e) => {
-                                                                    setActiveBookId(book.id)
-                                                                    {console.log(book.id)}
+                                                                    setActiveBookId(book._id)
                                                                     setOpenModal(true)
                                                                 }}
                                                             >
@@ -168,13 +169,67 @@ const deleteBook = () => {
                     <Typography variant="h5">No books found!</Typography>
                 )}
     
-                
-            </>
-        ):(
-            <Typography variant='h5'>No books found !</Typography>
-        )}
+
+
+       {
+                user && !isAdmin && (
+                    <>
+                        <div className={`${classes.pageHeader} ${classes.mb2}`}>
+                            <Typography variant="h5">Reserved Books</Typography>
+                        </div>
+                        {reservedBook.length > 0 ? (
+                            <>
+                                <div className={classes.tableContainer}>
+                                    <TableContainer component={Paper}>
+                                        <Table stickyHeader>
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell>Name</TableCell>
+                                                    <TableCell align="right">id</TableCell>
+                                                    <TableCell>Author</TableCell>
+                                                    <TableCell align="right">Quantity</TableCell>
+                                    
+                                                    <TableCell></TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {reservedBook.map((book) => (
+                                                    <TableRow key={book._id}>
+                                                        <TableCell component="th" scope="row">
+                                                            {book.title}
+                                                        </TableCell>
+                                                        <TableCell align="right">{book._id}</TableCell>
+                                                        <TableCell>{book.Author}</TableCell>
+                                                        <TableCell align="right">{book.Avaibilityquantity}</TableCell>
+                                                    
+                                                        <TableCell>
+                                                            <div className={classes.actionsContainer}>
+                                                                <Button
+                                                                    variant="contained"
+                                                                    component={RouterLink}
+                                                                    size="small"
+                                                                    to={`/books/${book._id}`}
+                                                                >
+                                                                    View
+                                                                </Button>
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </div>
+                            </>
+                        ) : (
+                            <Typography variant="h5">No books issued!</Typography>
+                        )}
+                    </>
+                )
+            }
         </>
   )
 }
+
 
 export default Booklist

@@ -5,21 +5,25 @@ const bookApi = {
         const res = await fetch("http://localhost:4000/api/v1/getAllbooks", { method: "GET" });
         return res.json();
     },
-    getBookByid: async (id,token) =>{
-        const res = await axios.get(`http://localhost:4000/api/v1/getbookdetails/${id}`,{
-          headers: {
-            Authorization: `Bearer ${token}` 
-        }
-        })
+    getUserBooks: async () => {
+      const res = await axios.get("http://localhost:4000/api/v1/getuserbooks")
+      return res.data
+    },
+
+    getBookByid: async (id) =>{
+        const res = await axios.get(`http://localhost:4000/api/v1/getbookdetails/${id}`)
         return res.data
     },
     updateBookByid: async (id, data) => {
-        const res = await fetch(`http://localhost:4000/api/v1/admin/updatebook/${id}}`, {
+      console.log(data, 'mod gud')
+        const res = await fetch(`http://localhost:4000/api/v1/admin/updatebook/${id}`, {
           method: "POST",
           body: JSON.stringify(data),
           headers: { "Content-Type": "application/json" },
         })
-        return res.json()
+        const updated=await res.json()
+        console.log(updated)
+        return updated
       },
       createBook: async (data) => {
         const res = await fetch("http://localhost:4000/api/v1/admin/createbook", {
@@ -29,6 +33,12 @@ const bookApi = {
         })
         return res.json()
       },
+      deleteBook: async (id)=>{
+        const token = localStorage.getItem('token')
+        const res= await axios.delete(`http://localhost:4000/api/v1/admin/deletebook/${id}`, { withCredentials: true })
+        return res.data
+      }
+      
 };
 
 export default bookApi;
