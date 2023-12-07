@@ -1,4 +1,5 @@
 import axios from "axios";
+import axiosPrivate from "../api/axios";
 
 const bookApi = {
     getAllBooks: async () => {
@@ -6,12 +7,12 @@ const bookApi = {
         return res.json();
     },
     getUserBooks: async () => {
-      const res = await axios.get("http://localhost:4000/api/v1/getuserbooks")
+      const res = await axiosPrivate.get("/v1/getuserbooks")
       return res.data
     },
 
     getBookByid: async (id) =>{
-        const res = await axios.get(`http://localhost:4000/api/v1/getbookdetails/${id}`)
+        const res = await axiosPrivate.get(`/v1/getbookdetails/${id}`)
         return res.data
     },
     updateBookByid: async (id, data) => {
@@ -35,7 +36,7 @@ const bookApi = {
       },
       deleteBook: async (id)=>{
         const token = localStorage.getItem('token')
-        const res= await axios.delete(`http://localhost:4000/api/v1/admin/deletebook/${id}`, { withCredentials: true })
+        const res= await axiosPrivate.delete(`/v1/admin/deletebook/${id}`, { withCredentials: true })
         return res.data
       }
       

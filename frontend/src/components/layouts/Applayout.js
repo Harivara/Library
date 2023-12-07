@@ -21,8 +21,9 @@ const Applayout = () => {
 
   const [openLoginDialog, setOpenLoginDialog] = useState(false)
   const [openRegisterDialog, setOpenRegisterDialog] = useState(false)
+  // const [openChangePassword, setOpenChangePassword] = useState(false)
 
-  const { user, isAdmin, loginUser, logoutUser, RegisterUser } = useUser()
+  const { user, isAdmin, loginUser, logoutUser, RegisterUser} = useUser()
 
   const [anchorElUser, setAnchorElUser] = useState(null)
 
@@ -41,22 +42,33 @@ const Applayout = () => {
     loginUser(username, password)
     setOpenLoginDialog(false)
   }
-  const handleRegisterSubmit = (username, password) => {
-    // console.log(username,password)
-    RegisterUser(username, password)
+  const handleRegisterSubmit = (username, password, name) => {
+    
+    RegisterUser(username, password, name)
     setOpenRegisterDialog(false)
   }
+  // const handleChangePasswordSubmit = (oldpassword, newpassword, confirmpassword) => {
+  
+  //   ChangePassword(oldpassword, newpassword, confirmpassword)
+  //   setOpenChangePassword(false)
+  // }
   const handleLoginClose = () => {
     setOpenLoginDialog(false)
   }
   const handleRegisterClose = () => {
     setOpenRegisterDialog(false)
   }
+  // const handleChangePasswordClose = () => {
+  //   setOpenChangePassword(false)
+  // }
 
   const handleLogout = () => {
     logoutUser()
     handleCloseUserMenu()
   }
+  // const changingpassword = () => {
+  //   setOpenChangePassword(true);
+  // };
   const profileview =()=>{
     
 
@@ -67,6 +79,9 @@ const Applayout = () => {
       navigate("/")
     } else if (isAdmin) {
       navigate("/admin/books/add")
+    }
+    else if(user){
+      navigate("/books")
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, isAdmin])
@@ -94,7 +109,7 @@ const Applayout = () => {
               {user ? (
 
                 <>
-
+{console.log(user, "user")}
                   <Tooltip title="Open settings">
                     <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                       <Avatar> U </Avatar>
@@ -116,14 +131,17 @@ const Applayout = () => {
                     open={Boolean(anchorElUser)}
                     onClose={handleCloseUserMenu}
                   >
-                    <MenuItem onClick={profileview()
-                    }>
+                    <MenuItem onClick={profileview()}>
                       <Typography textAlign="center">Profile</Typography>
 
                     </MenuItem>
                     <MenuItem onClick={handleLogout}>
                       <Typography textAlign="center">Logout</Typography>
                     </MenuItem>
+                    {/* <MenuItem onClick={changingpassword}>
+                  
+                      <Typography textAlign="center">ChangePassword</Typography>
+                    </MenuItem> */}
                   </Menu>
                 </>
               ) : (
@@ -194,7 +212,12 @@ const Applayout = () => {
       handleSubmit={handleRegisterSubmit}
       handleClose={handleRegisterClose}
       />
-     
+      {/* <ChangePassword>
+        open= {openChangePassword}
+        handleSubmit={handleChangePasswordSubmit}
+        handleClose = {handleChangePasswordClose}
+      </ChangePassword>
+      */}
 
     </>
   )

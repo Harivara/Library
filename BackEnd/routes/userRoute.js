@@ -1,5 +1,5 @@
 const express =require("express")
-const { createUser, loginUser, logoutUser, getUserDetails, updateUserPassword, updateUserProfile, getAllUsers, getSingleUser, upadateUserRole, deleteUser,  reservebook } = require("../controllers/userController")
+const { createUser, loginUser, logoutUser, getUserDetails, updateUserPassword, updateUserProfile, getAllUsers, getSingleUser, upadateUserRole, deleteUser,  reservebook, unreservebook, getUserBooks } = require("../controllers/userController")
 const { isAuthenticatedUser, authorizedRoles } = require("../middleware/auth")
 
 const router=express.Router()
@@ -22,5 +22,8 @@ router.route("/admin/updateuser/:id")
 .put(isAuthenticatedUser,authorizedRoles("admin"),upadateUserRole)
 .get(isAuthenticatedUser,authorizedRoles("admin"),deleteUser)
 router.route("/reservebook/:id").put(isAuthenticatedUser,reservebook)
+router.route("/unreservebook/:id").put(isAuthenticatedUser,unreservebook)
+router.route("/getuserbooks").get(isAuthenticatedUser,getUserBooks)
+
 
 module.exports =router

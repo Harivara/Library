@@ -2,17 +2,13 @@
 import { useEffect, useState } from "react"
 import { useParams, useNavigate, Link as RouterLink } from "react-router-dom"
 import {
-    Button,
-    Card,
-    CardContent,
-    CardActions,
-    Typography,
     Tabs,
     Tab,
-    Table,
-    TableBody,
-    TableCell,
-    TableRow,
+} from "@mui/material"
+import {
+    Button,Paper,Table,TableBody,TableCell,TableContainer,
+    TableHead,TableRow,Modal,Card,CardContent,CardActions,
+    Typography,TablePagination,
 } from "@mui/material"
 import { NotificationManager } from "react-notifications"
 import BackendApi from "../../backend-api-calls"
@@ -26,18 +22,25 @@ export const Book = () => {
     const navigate = useNavigate()
     const [book, setBook] = useState(null)
     const [openTab, setOpenTab] = useState(0)
- 
+    const [userBookData, setUserBookData] = useState([]);
+
+    
+    
+    
     const ReserveBook = () => {
+        const token = localStorage.getItem('token');
             if (book && user) {
+                console.log(token ,"sending id")
+                console.log(book,"book")
                 BackendApi.user
-                    .borrowBook(book.isbn, user._id)
+                    .reserveBook(book._id)
                     .then(({ book, error }) => {
                         if (error) {
                             NotificationManager.error(error)
                         } else {
                             setBook(book)
                         }
-                    })
+                    })              
                     .catch(console.error)
             }
         }
@@ -48,7 +51,7 @@ export const Book = () => {
     const UnReserveBook = () => {
         if (book && user) {
             BackendApi.user
-                .unreserveBook(book._id, user._id)
+                .unreserveBook(book._id)
                 .then(({ book, error }) => {
                     if (error) {
                         NotificationManager.error(error)
@@ -76,6 +79,68 @@ export const Book = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id])
 
+    // const userbooks=()=>{
+    //     if(user){
+    //     BackendApi.user.getuserbooks(user._id)
+    //     .then(({books,error})=>{
+    //         if(error){
+    //             NotificationManager.error(error)
+    //         }
+    //         else{
+    //             setBooks(books)
+    //         }
+    //     })
+    //     .catch(console.error)
+    //     }
+    // }
+
+    const fetchBooksData = async (bookIDs) => {
+        try {
+            const bookDataArray = [];
+    
+          for (const bookID of bookIDs) {
+            const response = await BackendApi.book.getBookByid(bookID);
+            
+            if (!response.error) {
+              
+              bookDataArray.push(response.book);
+            } else {
+    
+              console.error(`Error fetching book data for ID: ${bookID}`);
+            }
+          }
+          setUserBookData(bookDataArray);
+        } catch (error) {
+        
+          console.error("Error fetching book data:", error);
+          setUserBookData([])    }
+      };
+      useEffect(() => {
+        
+        if (user && user.BooksReserved) {
+            const bookIDs = user.BooksReserved;
+            fetchBooksData(bookIDs);
+        } else {
+    
+            console.error("No BooksReserved data available for the user");
+        
+            setUserBookData([]);
+        }
+    }, [user]); 
+
+//   const  bookIDs= user.BooksReserved
+//   fetchBooksData(bookIDs)
+//     .then((bookDataArray) => {
+//       console.log("Book Data:", bookDataArray);
+      
+//     })
+//     .catch((error) => {
+//       console.error("Error:", error);
+//     });
+    
+  
+console.log(userBookData[0], "data")
+    
     return (
         book && (
             <div className={classes.wrapper}>
@@ -101,6 +166,7 @@ export const Book = () => {
                     </Tabs>
 
                     <TabPanel value={openTab} index={0}>
+                        
                         <CardContent>
                             <Table>
                                 <TableBody>
@@ -141,25 +207,48 @@ export const Book = () => {
                         </CardContent>
                     </TabPanel>
 
-                    {/* <TabPanel value={openTab} index={1}>
-                        <CardContent>
-                            {book && book.ReservedBy.length > 0 ? (
-                                console.log(book.ReserveBook)
-                            ) : (
-                                <h3>No history found!</h3>
-                            )}
-                        </CardContent>
+                    <TabPanel value={openTab} index={1}>
+                    <TableContainer component={Paper}>
+                                <Table stickyHeader>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Name</TableCell>
+                                            <TableCell align="right"></TableCell>
+                                            <TableCell align="right">Author</TableCell>
+                                            <TableCell align="right">Quantity</TableCell>
+                                            <TableCell align="right">Status</TableCell>
+                                            <TableCell align="right">Publication</TableCell>
+                                            <TableCell>Action</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {userBookData.map((item) => (
+                        
+                                            <TableRow key={item._id}>
+                                                <TableCell component="th" scope="row">
+                                                    {item.title}
+                                                </TableCell>
+                                                <TableCell align="right">{item._id}</TableCell>
+                                                <TableCell align="right">{item.Author}</TableCell>
+                                                
+                                                <TableCell align="right">{item.Avaibilityquantity}</TableCell>
+                                                <TableCell align="right">{item.Status}</TableCell>
+                                                <TableCell align="right">{item.Publication}</TableCell>
+                                               
+                                        
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        
                     </TabPanel>
 
                     <TabPanel value={openTab} index={2}>
                         <CardContent>
-                            {book && book.ReserveBookHistory.length > 0 ? (
-                                console.log(book.ReserveBookHistory)
-                            ) : (
-                                <h3>No history found!</h3>
-                            )}
+                          
                         </CardContent>
-                    </TabPanel> */}
+                    </TabPanel>
 
                     <CardActions disableSpacing>
                         <div className={classes.btnContainer}>
@@ -174,7 +263,7 @@ export const Book = () => {
                                 </Button>
                             ) : (
                                 <>
-                                {console.log(book.ReservedBy)}
+                               
                                     <Button
                                         variant="contained"
                                         onClick={ReserveBook}

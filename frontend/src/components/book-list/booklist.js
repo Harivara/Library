@@ -19,18 +19,50 @@ const Booklist = () => {
  const [activeBookId, setActiveBookId] = useState("")
  const [openModal, setOpenModal] = useState(false)
  const {isAdmin,user}=useUser()
- const [reservedBook, setReservedBook] =useState([])
- 
+ const [userBookData, setUserBookData] =useState([{}])
+
 
 
   const fetchBooks = async () => {
     const  {books} = await BackendApi.book.getAllBooks()
       setbooks(books)
 } 
-const fetchUserBooks = async () => {
-    const  {userbooks} = await BackendApi.book.getUserBooks()
-    console.log(userbooks.user.BooksReserved)
-} 
+
+
+const fetchBooksData = async (bookIDs) => {
+    try {
+        const bookDataArray = [];
+
+      for (const bookID of bookIDs) {
+        const response = await BackendApi.book.getBookByid(bookID);
+        
+        if (!response.error) {
+          
+          bookDataArray.push(response.book);
+        } else {
+
+          console.error(`Error fetching book data for ID: ${bookID}`);
+        }
+      }
+      setUserBookData(bookDataArray);
+    } catch (error) {
+    
+      console.error("Error fetching book data:", error);
+      setUserBookData([])    }
+  };
+  useEffect(() => {
+    
+    if (user && user.BooksReserved) {
+        const bookIDs = user.BooksReserved;
+        fetchBooksData(bookIDs);
+    } else {
+
+        console.error("No BooksReserved data available for the user");
+    
+        setUserBookData([]);
+    }
+}, [user]); 
+
 
 
 
@@ -45,7 +77,7 @@ const deleteBook = () => {
 }
    useEffect(()=>{
       fetchBooks().catch(console.error)
-      fetchUserBooks().catch(console.error)
+      
    }, [user]) 
 
   return (
@@ -177,7 +209,7 @@ const deleteBook = () => {
                         <div className={`${classes.pageHeader} ${classes.mb2}`}>
                             <Typography variant="h5">Reserved Books</Typography>
                         </div>
-                        {reservedBook.length > 0 ? (
+                        {userBookData.length > 0 ? (
                             <>
                                 <div className={classes.tableContainer}>
                                     <TableContainer component={Paper}>
@@ -193,7 +225,7 @@ const deleteBook = () => {
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                {reservedBook.map((book) => (
+                                                {userBookData.map((book) => (
                                                     <TableRow key={book._id}>
                                                         <TableCell component="th" scope="row">
                                                             {book.title}
@@ -222,7 +254,7 @@ const deleteBook = () => {
                                 </div>
                             </>
                         ) : (
-                            <Typography variant="h5">No books issued!</Typography>
+                            <Typography variant="h5">No books Reserved!</Typography>
                         )}
                     </>
                 )

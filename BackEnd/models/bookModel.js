@@ -23,9 +23,9 @@ const bookSchema = new mongoose.Schema({
         type:Number,
         required: true
     },
-    Avaibilityquantity:{
+    AvailabilityQuantity:{
         type:Number,
-        default:this.quantity
+        
     },
    
     ReservedBy: [{ 

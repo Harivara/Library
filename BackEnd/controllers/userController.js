@@ -3,7 +3,8 @@ const User = require("../models/userModel")
 const ErrorHandler = require("../utils/errorhandler")
 const sendToken = require("../utils/jwttoken")
 const crypto =require("crypto");
-const Book= require("../models/bookModel")
+const Book= require("../models/bookModel");
+const { use } = require("../routes/userRoute");
 
 
 //register User
@@ -219,14 +220,104 @@ exports.upadateUserRole = catchasyncErrorHandler(
             }
         
             book.ReservedBy.push(user.id)
-            const updatedBook = await book.save();         
+            user.BooksReserved.push(book.id)
+            const updatedBook = await book.save();  
+            const updateUser=await user.save()       
 
             res.status(200).json({
                 book: {
                     ...updatedBook.toJSON(),
                     AvailabilityQuantity: updatedBook.quantity - updatedBook.ReservedBy.length,
+                },
+                user :{
+                    ...updateUser.toJSON(),
                 }
             });
         }
     );
+
+    exports.unreservebook=catchasyncErrorHandler(
+        async (req,res,next)=>{
+            const book = await Book.findById(req.params.id);
+
+            if (!book) {
+                return next(new ErrorHandler("Book not found", 404));
+            }
+            const user = await User.findById(req.user.id);
+            if (!user) {
+                return next(new ErrorHandler("User not found", 400));
+            }
+            if (!book.ReservedBy.includes(user.id)) {
+                return next(new ErrorHandler("You have already unreserved this book"));
+            }
+            book.ReservedBy=book.ReservedBy.filter(item=>item!=user.id)
+            user.BooksReserved=user.BooksReserved.filter(item=>item!=book.id)
+            updatedBook=await book.save()
+            updatedUser=await user.save()
+
+            res.status(200).json({
+                book:{
+                    ...updatedBook.toJSON(),
+                    AvailabilityQuantity: updatedBook.quantity - updatedBook.ReservedBy.length,
+                },
+                user:{
+                    ...updatedUser.toJSON()
+                }
+            })
+        }
+    )
     
+    exports.getUserBooks = catchasyncErrorHandler(
+        async (req,res,next) =>{
+            const user= await User.findById(req.user.id)
+            if(!user){
+                return next(new ErrorHandler("User not found"))
+            }
+            const books= user.BooksReserved
+            const booksdata =
+            res.status(200).json({
+                success:true,
+                books
+            })
+        }
+    )
+
+    // Function to fetch book data for multiple IDs
+const fetchBooksData = async (bookIDs) => {
+    try {
+      const bookDataArray = [];
+      
+      // Iterate through each book ID and fetch data
+      for (const bookID of bookIDs) {
+        const response = await BackendApi.book.getBookByid(bookID);
+        
+        if (!response.error) {
+          // Push the retrieved book data into the array
+          bookDataArray.push(response.book);
+        } else {
+          // Handle errors or missing data if needed
+          console.error(`Error fetching book data for ID: ${bookID}`);
+        }
+      }
+      
+      // bookDataArray will contain data for all the books fetched
+      return bookDataArray;
+    } catch (error) {
+      // Handle any unexpected errors during the process
+      console.error("Error fetching book data:", error);
+      return []; // or throw error based on your error handling logic
+    }
+  };
+  
+  // Usage:
+  const bookIDs = ['id1', 'id2', 'id3']; // Replace this array with your actual book IDs
+  fetchBooksData(bookIDs)
+    .then((bookDataArray) => {
+      // bookDataArray contains data for all the books fetched
+      console.log("Book Data:", bookDataArray);
+      // Use the book data as needed
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+  

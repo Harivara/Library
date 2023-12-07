@@ -49,11 +49,8 @@ ReservationHistory:[{
 ],
 BooksReserved:[ 
 {
-    book:{
         type:mongoose.Schema.ObjectId,
-        ref:"Book",
-        // required:true,
-    }
+        ref:"Book"
 }
 ],
 currentReserved:{

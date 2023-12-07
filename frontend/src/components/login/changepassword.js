@@ -7,15 +7,15 @@ const Transition = forwardRef(function Transition(props, ref){
 return <Slide direction="up" ref={ref} {... props} />
 })
 
-export const RegisterDialog = ({ open, handleClose, handleSubmit })=>{
+export const ChangePassword = ({ open, handleClose, handleSubmit })=>{
 
-const [username,setUsername] = useState("") 
-const [password, setPassword] = useState("")
-const [name, setName] = useState("")
+const [oldpassword,setOldpassword] = useState("") 
+const [newpassword, setNewpassword] = useState("")
+const [confirmpassword, setConfirmpassword] = useState("")
 
 const onSubmit = (event)=> { 
     event.preventDefault()
-    handleSubmit(username, password,name)
+    handleSubmit(oldpassword,newpassword,confirmpassword)
 }
 
 const handleEnterKeyDown = (event)=> { 
@@ -32,40 +32,40 @@ return  (
     onClose={handleClose}
     onKeyDown={handleEnterKeyDown}
 >   
-    <DialogTitle>Login</DialogTitle>
+    <DialogTitle>ChangePassword</DialogTitle>
     <DialogContent>
              <TextField
                 autoFocus
                 margin="dense"
-                id="Username"
+                id="oldpassword"
                 type="text"
-                label="Email"
+                label="Old Password"
                 fullWidth
                 variant="standard"
-                value={username}
-                onChange={(e)=>setUsername(e.target.value)}
+                value={oldpassword}
+                onChange={(e)=>setOldpassword(e.target.value)}
                 />
              <TextField
                 autoFocus
                 margin="dense"
-                id="password"
+                id="newpassword"
                 type="text"
-                label="Password"
+                label="New Password"
                 fullWidth
                 variant="standard"
-                value={password}
-                onChange={(e)=>setPassword(e.target.value)}
+                value={newpassword}
+                onChange={(e)=>setNewpassword(e.target.value)}
                 />
              <TextField
                 autoFocus
                 margin="dense"
-                id="name"
+                id="confirmpassword"
                 type="text"
-                label="Name"
+                label="Confirm Password"
                 fullWidth
                 variant="standard"
-                value={name}
-                onChange={(e)=>setName(e.target.value)}
+                value={confirmpassword}
+                onChange={(e)=>setConfirmpassword(e.target.value)}
                 />
     </DialogContent>
     <DialogActions>

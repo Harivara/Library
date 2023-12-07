@@ -44,9 +44,23 @@ const UserProvider = ({ children }) => {
             NotificationManager.error(error)
         } else {
             NotificationManager.success("Logged in successfully")
+            console.log(user)
+
             setUser(user)
         }
     }
+    // const ChangePassword = async (oldpassword, newpassword , confirmpassword) => {
+        
+    //     const { user, error } = await BackendApi.user.changepassword(oldpassword, newpassword , confirmpassword)
+    //     if (error) {
+    //         NotificationManager.error(error)
+    //     } else {
+    //         NotificationManager.success("Password changed in successfully")
+    //         console.log(user)
+
+    //         setUser(user)
+    //     }
+    // }
 
     const logoutUser = async () => {
         setUser(null)
@@ -54,7 +68,7 @@ const UserProvider = ({ children }) => {
     }
 
     return (
-        <UserContext.Provider value={{ user, loginUser, logoutUser, isAdmin, RegisterUser }}>
+        <UserContext.Provider value={{ user, loginUser, logoutUser, isAdmin, RegisterUser}}>
             {children}
         </UserContext.Provider>
     )
