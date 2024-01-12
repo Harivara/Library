@@ -9,5 +9,3 @@ Steps To Install:
 3. open new terminal and run command "npm start" from the frontend directory to start the React app 
 
 
-I have included all the features in the backend routes but failed to implement them in the frontend part
-
